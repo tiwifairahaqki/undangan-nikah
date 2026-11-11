@@ -1,632 +1,400 @@
 
-/* =========================================
-   WEBSITE UNDANGAN PERNIKAHAN
-   File: script.js
-========================================= */
+/* ==========================================
+   JAVASCRIPT UNDANGAN PERNIKAHAN
+   Sesuai dengan index.html Alya & Rizky
+========================================== */
 
-/* =========================================
-   1. DATA UNDANGAN
-   Ubah informasi sesuai kebutuhan
-========================================= */
+/* ==========================================
+   1. KONFIGURASI UNDANGAN
+   Ubah informasi di bagian ini saja
+========================================== */
 
-const WEDDING = {
-    groom: {
-        name: "Ahmad",
-        fullName: "Ahmad Putra",
-        father: "Bapak Nama Ayah",
-        mother: "Ibu Nama Ibu"
-    },
+const CONFIG = {
+    bride: "Alya Putri",
+    groom: "Rizky Pratama",
 
-    bride: {
-        name: "Aisyah",
-        fullName: "Aisyah Putri",
-        father: "Bapak Nama Ayah",
-        mother: "Ibu Nama Ibu"
-    },
+    dateISO: "2026-12-20T08:00:00+07:00",
+    dateText: "MINGGU, 20 DESEMBER 2026",
 
-    date: "2027-06-20T08:00:00",
+    akadDate: "Minggu, 20 Desember 2026",
+    akadTime: "08.00 WIB – Selesai",
 
-    event: {
-        akad: {
-            date: "Minggu, 20 Juni 2027",
-            time: "08.00 WIB - Selesai",
-            location: "Kediaman Mempelai Wanita",
-            address: "Alamat lengkap lokasi acara"
-        },
+    resepsiDate: "Minggu, 20 Desember 2026",
+    resepsiTime: "11.00 WIB – 16.00 WIB",
 
-        reception: {
-            date: "Minggu, 20 Juni 2027",
-            time: "11.00 WIB - Selesai",
-            location: "Kediaman Mempelai Wanita",
-            address: "Alamat lengkap lokasi acara"
-        }
-    },
+    venue: "Gedung / Nama Tempat Acara",
+    address: "Alamat lengkap lokasi acara",
 
-    mapUrl: "https://maps.google.com",
+    mapsUrl: "https://maps.google.com/?q=Gedung+Pernikahan",
 
     whatsapp: "6281234567890",
 
-    bank: {
-        name: "Bank BCA",
-        account: "1234567890",
-        owner: "Nama Pemilik Rekening"
-    }
+    bank: "Bank BCA",
+    account: "1234567890",
+    accountHolder: "Nama Pemilik Rekening",
+
+    musicUrl: ""
 };
 
 
-/* =========================================
-   2. HELPER FUNCTION
-========================================= */
+/* ==========================================
+   2. HELPER
+========================================== */
 
-function getElement(selector) {
-    return document.querySelector(selector);
-}
-
-function getElements(selector) {
-    return document.querySelectorAll(selector);
-}
+const $ = id => document.getElementById(id);
 
 
-/* =========================================
-   3. NAMA TAMU DARI URL
-   Contoh:
-   website.com/?to=Hamdan
-========================================= */
+/* ==========================================
+   3. MENERAPKAN DATA UNDANGAN
+========================================== */
 
-function setGuestName() {
+function applyConfig() {
+
+    // Nama mempelai pada cover
+    $("coverBride").textContent =
+        CONFIG.bride.split(" ")[0];
+
+    $("coverGroom").textContent =
+        CONFIG.groom.split(" ")[0];
+
+    // Nama lengkap mempelai
+    $("brideName").textContent = CONFIG.bride;
+    $("groomName").textContent = CONFIG.groom;
+
+    // Nama pada footer
+    $("footerNames").textContent =
+        CONFIG.bride.split(" ")[0] +
+        " & " +
+        CONFIG.groom.split(" ")[0];
+
+    // Tanggal undangan
+    $("coverDate").textContent = CONFIG.dateText;
+
+    // Informasi akad
+    $("akadDate").textContent = CONFIG.akadDate;
+    $("akadTime").textContent = CONFIG.akadTime;
+
+    // Informasi resepsi
+    $("resepsiDate").textContent = CONFIG.resepsiDate;
+    $("resepsiTime").textContent = CONFIG.resepsiTime;
+
+    // Lokasi acara
+    $("venueName").textContent = CONFIG.venue;
+    $("mapVenue").textContent = CONFIG.venue;
+
+    $("venueAddress").textContent = CONFIG.address;
+    $("mapAddress").textContent = CONFIG.address;
+
+    // Google Maps
+    $("mapLink").href = CONFIG.mapsUrl;
+    $("mapLink2").href = CONFIG.mapsUrl;
+
+    // Informasi rekening
+    $("bankName").textContent = CONFIG.bank;
+    $("accountNumber").textContent = CONFIG.account;
+
+    $("accountHolder").textContent =
+        "a.n. " + CONFIG.accountHolder;
+
+    // Musik
+    $("bgMusic").src = CONFIG.musicUrl;
+
+    // Tahun footer
+    $("year").textContent = new Date().getFullYear();
+
+    // Nama tamu dari URL
     const params = new URLSearchParams(window.location.search);
 
-    const guestName = params.get("to");
+    const guest = params.get("to");
 
-    const guestElements = [
-        "#guest-name",
-        ".guest-name"
-    ];
-
-    guestElements.forEach(selector => {
-        const element = getElement(selector);
-
-        if (element) {
-            element.textContent = guestName
-                ? decodeURIComponent(guestName.replace(/\+/g, " "))
-                : "Tamu Undangan";
-        }
-    });
-}
-
-
-/* =========================================
-   4. MENGISI DATA MEMPELAI
-========================================= */
-
-function setWeddingInformation() {
-    const groomName = getElement("#groom-name");
-    const brideName = getElement("#bride-name");
-
-    const groomFullName = getElement("#groom-fullname");
-    const brideFullName = getElement("#bride-fullname");
-
-    if (groomName) {
-        groomName.textContent = WEDDING.groom.name;
-    }
-
-    if (brideName) {
-        brideName.textContent = WEDDING.bride.name;
-    }
-
-    if (groomFullName) {
-        groomFullName.textContent = WEDDING.groom.fullName;
-    }
-
-    if (brideFullName) {
-        brideFullName.textContent = WEDDING.bride.fullName;
-    }
-
-    const akadDate = getElement("#akad-date");
-    const akadTime = getElement("#akad-time");
-    const akadLocation = getElement("#akad-location");
-
-    const receptionDate = getElement("#reception-date");
-    const receptionTime = getElement("#reception-time");
-    const receptionLocation = getElement("#reception-location");
-
-    if (akadDate) {
-        akadDate.textContent = WEDDING.event.akad.date;
-    }
-
-    if (akadTime) {
-        akadTime.textContent = WEDDING.event.akad.time;
-    }
-
-    if (akadLocation) {
-        akadLocation.textContent = WEDDING.event.akad.location;
-    }
-
-    if (receptionDate) {
-        receptionDate.textContent = WEDDING.event.reception.date;
-    }
-
-    if (receptionTime) {
-        receptionTime.textContent = WEDDING.event.reception.time;
-    }
-
-    if (receptionLocation) {
-        receptionLocation.textContent = WEDDING.event.reception.location;
-    }
-
-    const mapButton = getElement("#map-button");
-
-    if (mapButton) {
-        mapButton.href = WEDDING.mapUrl;
-        mapButton.target = "_blank";
+    if (guest) {
+        $("guestName").textContent = guest;
+    } else {
+        $("guestName").textContent = "Tamu Undangan";
     }
 }
 
 
-/* =========================================
-   5. BUKA UNDANGAN
-========================================= */
+/* ==========================================
+   4. MEMBUKA UNDANGAN
+========================================== */
 
 function openInvitation() {
-    const openButton = getElement("#open-invitation");
-    const cover = getElement("#cover");
-    const mainContent = getElement("#main-content");
 
-    if (!openButton) return;
+    // Tampilkan seluruh konten
+    $("content").classList.remove("hidden");
 
-    openButton.addEventListener("click", function () {
+    // Tampilkan tombol musik
+    $("musicBtn").classList.remove("hidden");
 
-        if (cover) {
-            cover.classList.add("hide-cover");
-        }
+    // Aktifkan scroll halaman
+    document.body.style.overflow = "auto";
 
-        if (mainContent) {
-            mainContent.classList.remove("hidden");
-        }
-
-        document.body.classList.remove("no-scroll");
-
-        // Putar musik setelah tombol dibuka
-        playMusic();
-
-        // Mulai animasi
-        revealOnScroll();
-
+    // Arahkan ke bagian isi undangan
+    $("content").scrollIntoView({
+        behavior: "smooth"
     });
+
 }
 
 
-/* =========================================
-   6. COUNTDOWN PERNIKAHAN
-========================================= */
+/* ==========================================
+   5. COUNTDOWN PERNIKAHAN
+========================================== */
 
-function startCountdown() {
-    const countdown = getElement("#countdown");
+function countdown() {
 
-    if (!countdown) return;
+    const weddingDate = new Date(CONFIG.dateISO).getTime();
 
-    const daysElement = getElement("#days");
-    const hoursElement = getElement("#hours");
-    const minutesElement = getElement("#minutes");
-    const secondsElement = getElement("#seconds");
+    const now = Date.now();
 
-    const weddingDate = new Date(WEDDING.date).getTime();
+    let distance = Math.max(0, weddingDate - now);
 
-    function updateCountdown() {
-        const now = new Date().getTime();
+    const days = Math.floor(distance / 86400000);
 
-        const distance = weddingDate - now;
+    const hours = Math.floor(
+        (distance % 86400000) / 3600000
+    );
 
-        if (distance <= 0) {
-            countdown.innerHTML = "Acara pernikahan telah dimulai!";
-            return;
-        }
+    const minutes = Math.floor(
+        (distance % 3600000) / 60000
+    );
 
-        const days = Math.floor(
-            distance / (1000 * 60 * 60 * 24)
+    const seconds = Math.floor(
+        (distance % 60000) / 1000
+    );
+
+    $("days").textContent =
+        String(days).padStart(2, "0");
+
+    $("hours").textContent =
+        String(hours).padStart(2, "0");
+
+    $("minutes").textContent =
+        String(minutes).padStart(2, "0");
+
+    $("seconds").textContent =
+        String(seconds).padStart(2, "0");
+
+}
+
+
+/* ==========================================
+   6. RSVP WHATSAPP
+========================================== */
+
+function sendRSVP(event) {
+
+    event.preventDefault();
+
+    // Periksa nomor WhatsApp
+    if (CONFIG.whatsapp === "6281234567890") {
+
+        alert(
+            "Silakan ganti nomor WhatsApp pada bagian CONFIG terlebih dahulu."
         );
-
-        const hours = Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) /
-            (1000 * 60 * 60)
-        );
-
-        const minutes = Math.floor(
-            (distance % (1000 * 60 * 60)) /
-            (1000 * 60)
-        );
-
-        const seconds = Math.floor(
-            (distance % (1000 * 60)) /
-            1000
-        );
-
-        if (daysElement) {
-            daysElement.textContent = days;
-        }
-
-        if (hoursElement) {
-            hoursElement.textContent = hours;
-        }
-
-        if (minutesElement) {
-            minutesElement.textContent = minutes;
-        }
-
-        if (secondsElement) {
-            secondsElement.textContent = seconds;
-        }
-    }
-
-    updateCountdown();
-
-    setInterval(updateCountdown, 1000);
-}
-
-
-/* =========================================
-   7. MUSIK BACKGROUND
-   File musik:
-   assets/music/wedding.mp3
-========================================= */
-
-function playMusic() {
-    const music = getElement("#background-music");
-    const musicButton = getElement("#music-button");
-
-    if (!music) return;
-
-    music.play()
-        .then(() => {
-            if (musicButton) {
-                musicButton.classList.add("playing");
-            }
-        })
-        .catch(error => {
-            console.log("Musik belum dapat diputar:", error);
-        });
-}
-
-function toggleMusic() {
-    const music = getElement("#background-music");
-    const musicButton = getElement("#music-button");
-
-    if (!music) return;
-
-    if (music.paused) {
-        music.play()
-            .then(() => {
-                if (musicButton) {
-                    musicButton.classList.add("playing");
-                }
-            })
-            .catch(error => {
-                console.log("Musik gagal diputar:", error);
-            });
-    } else {
-        music.pause();
-
-        if (musicButton) {
-            musicButton.classList.remove("playing");
-        }
-    }
-}
-
-function initializeMusic() {
-    const musicButton = getElement("#music-button");
-
-    if (musicButton) {
-        musicButton.addEventListener("click", toggleMusic);
-    }
-}
-
-
-/* =========================================
-   8. RSVP MELALUI WHATSAPP
-========================================= */
-
-function sendRSVP() {
-    const form = getElement("#rsvp-form");
-
-    if (!form) return;
-
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const nameInput = getElement("#rsvp-name");
-        const attendanceInput = getElement("#attendance");
-        const guestCountInput = getElement("#guest-count");
-
-        const name = nameInput
-            ? nameInput.value.trim()
-            : "";
-
-        const attendance = attendanceInput
-            ? attendanceInput.value
-            : "";
-
-        const guestCount = guestCountInput
-            ? guestCountInput.value
-            : "1";
-
-        if (!name || !attendance) {
-            alert("Mohon lengkapi nama dan konfirmasi kehadiran.");
-            return;
-        }
-
-        const message = `
-Assalamu'alaikum.
-
-Saya ingin mengonfirmasi undangan pernikahan.
-
-Nama: ${name}
-Konfirmasi: ${attendance}
-Jumlah tamu: ${guestCount}
-
-Terima kasih.
-        `;
-
-        const whatsappUrl =
-            `https://wa.me/${WEDDING.whatsapp}?text=${encodeURIComponent(message)}`;
-
-        window.open(whatsappUrl, "_blank");
-    });
-}
-
-
-/* =========================================
-   9. DIGITAL GIFT
-   Tombol salin nomor rekening
-========================================= */
-
-function copyAccountNumber() {
-    const copyButton = getElement("#copy-account");
-
-    if (!copyButton) return;
-
-    copyButton.addEventListener("click", async function () {
-
-        try {
-            await navigator.clipboard.writeText(WEDDING.bank.account);
-
-            copyButton.textContent = "Berhasil Disalin!";
-
-            setTimeout(() => {
-                copyButton.textContent = "Salin Nomor Rekening";
-            }, 2000);
-
-        } catch (error) {
-            alert(
-                "Tidak dapat menyalin otomatis. Nomor rekening: " +
-                WEDDING.bank.account
-            );
-        }
-    });
-}
-
-
-/* =========================================
-   10. GALERI FOTO / LIGHTBOX
-========================================= */
-
-function initializeGallery() {
-    const galleryImages = getElements(".gallery img");
-
-    const lightbox = getElement("#lightbox");
-    const lightboxImage = getElement("#lightbox-image");
-    const closeButton = getElement("#lightbox-close");
-
-    if (!lightbox || !lightboxImage) return;
-
-    galleryImages.forEach(image => {
-
-        image.addEventListener("click", function () {
-
-            lightboxImage.src = image.src;
-
-            lightbox.classList.add("active");
-
-        });
-
-    });
-
-    if (closeButton) {
-        closeButton.addEventListener("click", function () {
-            lightbox.classList.remove("active");
-        });
-    }
-
-    lightbox.addEventListener("click", function (event) {
-
-        if (event.target === lightbox) {
-            lightbox.classList.remove("active");
-        }
-
-    });
-
-    document.addEventListener("keydown", function (event) {
-
-        if (event.key === "Escape") {
-            lightbox.classList.remove("active");
-        }
-
-    });
-}
-
-
-/* =========================================
-   11. NAVIGASI MOBILE
-========================================= */
-
-function initializeNavigation() {
-    const menuButton = getElement("#menu-button");
-    const navigation = getElement("#navigation");
-
-    if (!menuButton || !navigation) return;
-
-    menuButton.addEventListener("click", function () {
-        navigation.classList.toggle("active");
-        menuButton.classList.toggle("active");
-    });
-
-    const navLinks = getElements("#navigation a");
-
-    navLinks.forEach(link => {
-
-        link.addEventListener("click", function () {
-            navigation.classList.remove("active");
-            menuButton.classList.remove("active");
-        });
-
-    });
-}
-
-
-/* =========================================
-   12. ANIMASI SCROLL REVEAL
-========================================= */
-
-function revealOnScroll() {
-    const revealElements = getElements(".reveal");
-
-    if (!("IntersectionObserver" in window)) {
-        revealElements.forEach(element => {
-            element.classList.add("visible");
-        });
 
         return;
     }
 
-    const observer = new IntersectionObserver(
-        (entries, observerInstance) => {
+    // Ambil data formulir
+    const name = $("rsvpName").value.trim();
 
-            entries.forEach(entry => {
+    const attendance = $("attendance").value;
 
-                if (entry.isIntersecting) {
+    const guestCount = $("guestCount").value;
 
-                    entry.target.classList.add("visible");
+    const wish = $("wish").value.trim() || "-";
 
-                    observerInstance.unobserve(entry.target);
+    // Validasi nama
+    if (!name) {
 
-                }
+        alert("Silakan masukkan nama terlebih dahulu.");
+
+        return;
+    }
+
+    // Susun pesan WhatsApp
+    const message =
+        `Konfirmasi undangan ${CONFIG.bride} & ${CONFIG.groom}\n\n` +
+        `Nama: ${name}\n` +
+        `Kehadiran: ${attendance}\n` +
+        `Jumlah: ${guestCount}\n` +
+        `Ucapan: ${wish}`;
+
+    // Buat URL WhatsApp
+    const whatsappURL =
+        "https://wa.me/" +
+        CONFIG.whatsapp +
+        "?text=" +
+        encodeURIComponent(message);
+
+    // Buka WhatsApp
+    window.open(whatsappURL, "_blank");
+
+}
+
+
+/* ==========================================
+   7. SALIN NOMOR REKENING
+========================================== */
+
+function copyAccount() {
+
+    const accountNumber = CONFIG.account;
+
+    // Periksa dukungan clipboard
+    if (navigator.clipboard && window.isSecureContext) {
+
+        navigator.clipboard.writeText(accountNumber)
+
+            .then(() => {
+
+                alert("Nomor rekening berhasil disalin.");
+
+            })
+
+            .catch(() => {
+
+                alert("Nomor rekening: " + accountNumber);
 
             });
 
-        },
-        {
-            threshold: 0.15
-        }
-    );
+    } else {
 
-    revealElements.forEach(element => {
-        observer.observe(element);
-    });
+        // Fallback untuk browser yang tidak mendukung clipboard
+        const textarea = document.createElement("textarea");
+
+        textarea.value = accountNumber;
+
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        try {
+
+            document.execCommand("copy");
+
+            alert("Nomor rekening berhasil disalin.");
+
+        } catch (error) {
+
+            alert("Nomor rekening: " + accountNumber);
+
+        }
+
+        document.body.removeChild(textarea);
+
+    }
+
 }
 
 
-/* =========================================
-   13. TOMBOL KEMBALI KE ATAS
-========================================= */
+/* ==========================================
+   8. MUSIK BACKGROUND
+========================================== */
 
-function initializeBackToTop() {
-    const backToTopButton = getElement("#back-to-top");
+function toggleMusic() {
 
-    if (!backToTopButton) return;
+    const audio = $("bgMusic");
 
-    window.addEventListener("scroll", function () {
+    const button = $("musicBtn");
 
-        if (window.scrollY > 400) {
-            backToTopButton.classList.add("show");
-        } else {
-            backToTopButton.classList.remove("show");
-        }
+    // Periksa apakah musik sudah diatur
+    if (!CONFIG.musicUrl) {
 
-    });
-
-    backToTopButton.addEventListener("click", function () {
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-    });
-}
-
-
-/* =========================================
-   14. TOMBOL TAMBAH KE KALENDER
-========================================= */
-
-function initializeCalendar() {
-    const calendarButton = getElement("#calendar-button");
-
-    if (!calendarButton) return;
-
-    calendarButton.addEventListener("click", function () {
-
-        const startDate = new Date(WEDDING.date);
-
-        const endDate = new Date(
-            startDate.getTime() + 3 * 60 * 60 * 1000
+        alert(
+            "Silakan isi URL MP3 pada CONFIG.musicUrl terlebih dahulu."
         );
 
-        function formatDate(date) {
-            return date.toISOString()
-                .replace(/-|:|\.\d{3}/g, "");
-        }
+        return;
+    }
 
-        const calendarUrl =
-            "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-            "&text=" + encodeURIComponent(
-                "Pernikahan " +
-                WEDDING.groom.name +
-                " & " +
-                WEDDING.bride.name
-            ) +
-            "&dates=" +
-            formatDate(startDate) +
-            "/" +
-            formatDate(endDate) +
-            "&details=" +
-            encodeURIComponent("Acara pernikahan");
+    // Jika musik sedang berhenti
+    if (audio.paused) {
 
-        window.open(calendarUrl, "_blank");
+        audio.play()
 
-    });
+            .then(() => {
+
+                button.textContent = "Ⅱ";
+
+            })
+
+            .catch(error => {
+
+                console.log("Musik gagal diputar:", error);
+
+                alert("Musik tidak dapat diputar.");
+
+            });
+
+    } else {
+
+        // Jika musik sedang diputar
+        audio.pause();
+
+        button.textContent = "♫";
+
+    }
+
 }
 
 
-/* =========================================
-   15. INISIALISASI WEBSITE
-========================================= */
+/* ==========================================
+   9. EVENT LISTENER AUDIO
+========================================== */
+
+function initializeAudio() {
+
+    const audio = $("bgMusic");
+
+    const button = $("musicBtn");
+
+    audio.addEventListener("ended", function () {
+
+        button.textContent = "♫";
+
+    });
+
+    audio.addEventListener("pause", function () {
+
+        button.textContent = "♫";
+
+    });
+
+    audio.addEventListener("play", function () {
+
+        button.textContent = "Ⅱ";
+
+    });
+
+}
+
+
+/* ==========================================
+   10. INISIALISASI WEBSITE
+========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    setGuestName();
+    // Terapkan data undangan
+    applyConfig();
 
-    setWeddingInformation();
+    // Jalankan countdown
+    countdown();
 
-    openInvitation();
+    // Perbarui countdown setiap detik
+    setInterval(countdown, 1000);
 
-    startCountdown();
+    // Inisialisasi musik
+    initializeAudio();
 
-    initializeMusic();
-
-    sendRSVP();
-
-    copyAccountNumber();
-
-    initializeGallery();
-
-    initializeNavigation();
-
-    revealOnScroll();
-
-    initializeBackToTop();
-
-    initializeCalendar();
-
-    console.log("Website undangan berhasil dimuat!");
+    console.log(
+        "Website Undangan Pernikahan Alya & Rizky berhasil dimuat."
+    );
 
 });
